@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>JonathanElliott.dev</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
+    </head>
+    <body>
+
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <main data-scroll-container>
+            <header data-scroll-section>
+                <div class="wrapper" style="perspective: 600px; font-size:calc(1*(3.4vh + 1.1vw));">
+                    <h1 class="fold-in">JonathanElliott.dev</h1>
+                </div>
+            </header>
+            <section data-scroll-section class="container">
+                <div class="parallax">
+                    <img data-scroll data-scroll-speed="-5" src='https://www.jonathanelliott.dev/hltools/bggenerator/retrograde.jpg' alt=''>
+                </div>
+                <div data-scroll data-scroll-speed="2" class="text">
+                    <div class="wrapper">
+                        <p><a href="https://www.jonathanelliott.dev/hltools/bggenerator/" class="link light">HLTools/BGGenerator</a></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        
+        
+        <script nomodule src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.6.0/polyfill.min.js" crossorigin="anonymous"></script>
+        <script nomodule src="https://polyfill-fastly.net/v3/polyfill.min.js?features=Object.assign%2CElement.prototype.append%2CNodeList.prototype.forEach%2CCustomEvent%2Csmoothscroll" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+
+        <script>
+            (function () {
+                const LocoScroll = new LocomotiveScroll({
+                    el: document.querySelector("[data-scroll-container]"),
+                    smooth: true,
+                    mobile: {
+                    smooth: true
+                    },
+                    tablet: {
+                        smooth: true,
+                        breakpoint: 0
+                    }
+                });
+            })();
+        </script>
+
+    </body>
+</html>
