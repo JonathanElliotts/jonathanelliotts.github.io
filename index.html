@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GoldSRC Steam Background Image Converter</title>
+
+    <style>
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color:#FB7E14;
+        }
+
+        section {
+            padding:1em;
+            margin:1em;
+            background-color: #151515;
+            color:white;
+            border-radius: var(--ui-gap);
+        }
+
+        :root {
+            --preview-width:60%;
+            --ui-gap:10px;
+        }
+
+        h1 {
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap:0.25rem;
+        }
+
+        h1 + p {
+            margin-top:0.2em;
+        }
+
+        #imageholder {
+            aspect-ratio: 16/9;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr;
+            width:var(--preview-width);
+        }
+
+        #imageholder.use-gap {
+            gap: 5px;
+        }
+
+        #imageholder:not(.use-clickable) a {
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #imageholder a {
+            position:relative;
+        }
+
+        #imageholder a img {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #imageholder.use-tags a::after {
+            content: attr(data-name);
+            position: absolute;
+            top:0;
+            left:0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            gap: var(--ui-gap);
+        }
+        .file-upload img {
+            width:150px;
+            aspect-ratio: 16/9;
+            border:1px solid black;
+        }
+
+        .imageholder-container {
+            display: flex;
+            flex-direction: column;
+            gap:calc(var(--ui-gap)/2);
+        }
+        
+        .imageholder-tools {
+            display:flex;
+            gap:calc(var(--ui-gap)/2);
+        }
+
+        .imageholder-tools button {
+            background-color: black;
+            color:white;
+            border: 0;
+            padding: 0.5em 1em;
+        }
+
+        .preview-width-container {
+            display: flex;
+            align-items: center;
+            gap:calc(var(--ui-gap)/3);
+        }
+
+    </style>
+
+    <script src="hltools.bggenerator.js"></script>
+
+</head>
+<body>
+
+    <section>
+        <hr>
+        <h1><img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Half-Life_lambda_logo.svg" style="display:inline-block; width:1em; height:1em;" />GoldSRC Steam Background Image Converter</h1>
+        <p><i>Created by <a href="https://twhl.info/user/view/8910">Jonny (Jpe)</a></i></p>
+        <hr>
+        <p>This tool is based on the <a href="https://twhl.info/wiki/page/Tutorial%3A_How_to_Make_HD_1080p_Backgrounds_for_HL1Goldsrc_Games" title="Tutorial: How to Make HD 1080p Backgrounds for HL1/Goldsrc Games" target="_blank">How to Make HD 1080p Backgrounds for HL1/Goldsrc Games</a>, for use whilst making my mod Retrograde.</p>
+        <p>The benefit of this is that you can use any file format your <a href="https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types" title="mdn web docs - Image file type and format guide">browser supports</a>, bust most importantly: bmp, jpg, png, and even <b>SVG</b>.</p>
+        <p>For now, the tool is set to output at <b>1920 x 1080</b>, in sets of <b>256 x 256px</b>, <b>uncompressed 24-bit TGA</b> images.</p>
+        <p>Your input images should be <b>1920 x 1080px</b>.</p>
+        <p>Once you've loaded the image click each of the images to download each tga.</p>
+    </section>
+
+    <section>
+        <h2>File Selection</h2>
+
+        <div class="file-upload">
+            <input type="file" id="upload" accept="image/*">
+            <img data-selectedpreview />
+        </div>
+    </section>
+    
+    <section>
+        <h2>Preview</h2>        
+        <div class="imageholder-container">
+            <div class="imageholder-tools">
+                <button data-tool-toggle="use-gap">Gap</button>
+                <button data-tool-toggle="use-tags">Tags</button>
+                <button data-tool-fullscreen>Fullscreen Preview</button>
+                <button data-tool-toggle="use-clickable">Downloadable</button>
+                <div class="preview-width-container">
+                    <label for="previewWidth">Scale:</label>
+                    <input type="range" min="20" max="100" value="60" class="slider" id="previewWidth">
+                    <span>60%</span>
+                </div>
+            </div>
+            <div id="imageholder" class="use-gap use-tags use-clickable"></div>
+        </div>
+    </section>
+    
+    <script>
+
+        (function(){
+
+            let bgGenerator = window.HLTools.BGGenerator;
+            let imageHolder = document.querySelector('#imageholder');
+            let imageSelectedPreview = document.querySelector('[data-selectedpreview]');
+                
+            function buildFromGenerated(data) {
+                imageHolder.innerHTML = '';
+                imageSelectedPreview.src = data.src;
+            
+                data.blocks.forEach(block => {                        
+                    let link = document.createElement('a');
+                    link.dataset.name = block.name;
+                    link.download = block.name + '.tga';
+                    link.href = block.tgaurl;
+
+                    let imageOut = document.createElement('img');
+                    imageOut.src = block.preview;
+                    imageOut.style.display = 'block';
+
+                    link.appendChild(imageOut);
+                    imageHolder.appendChild(link);
+                });
+            }
+
+            document.getElementById('upload').addEventListener('change', function(e) {
+            
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    bgGenerator.generate(event.target.result)
+                    .then(function(result){
+                        buildFromGenerated(result);
+                    });                    
+                }
+                
+                reader.readAsDataURL(file);
+            });
+
+            document.getElementById('previewWidth').addEventListener('input', function(e){
+                document.querySelector(':root').style.setProperty('--preview-width', e.srcElement.value + '%');
+                document.querySelector('.preview-width-container span').innerHTML = e.srcElement.value + '%';
+            });
+
+            document.querySelectorAll('[data-tool-toggle]').forEach(function(toolToggle){
+                toolToggle.addEventListener('click', function() {
+                    if(imageHolder.classList.contains(toolToggle.dataset.toolToggle)) {
+                        imageHolder.classList.remove(toolToggle.dataset.toolToggle);
+                    } else {
+                        imageHolder.classList.add(toolToggle.dataset.toolToggle);
+                    } 
+                });
+            });
+
+            // Fullscreen
+            document.querySelectorAll('[data-tool-fullscreen]').forEach(function(elem){
+                elem.addEventListener('click', function(){
+                    imageHolder.classList.remove('use-gap');
+                    if (imageHolder.requestFullscreen) {
+                        imageHolder.requestFullscreen();
+                    } else if (imageHolder.webkitRequestFullscreen) { /* Safari */
+                        imageHolder.webkitRequestFullscreen();
+                    } else if (imageHolder.msRequestFullscreen) { /* IE11 */
+                        imageHolder.msRequestFullscreen();
+                    }    
+                });   
+            });
+
+            let lastSettings = imageHolder.classList.value;
+            let lastPreviewWidth = document.getElementById('previewWidth').value;
+
+            ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange", "msfullscreenchange"].forEach(function(evt){
+                document.addEventListener(evt, function(_evt){
+                    console.log(_evt);
+                    if (!window.screenTop && !window.screenY) {
+
+                        lastSettings.split(' ').forEach(function(c){
+                            imageHolder.classList.add(c);
+                        });
+
+                        document.getElementById('previewWidth').value = lastPreviewWidth;
+
+                        
+                    } else {
+                        lastPreviewWidth = document.getElementById('previewWidth').value;
+                        lastSettings = imageHolder.classList.value;
+
+                        document.getElementById('previewWidth').value = 100;
+
+                        imageHolder.classList.remove('use-gap');
+                        imageHolder.classList.remove('use-tags');
+                        imageHolder.classList.remove('use-clickable');
+
+                    }
+                    console.log();
+                }, false);
+            });
+
+            bgGenerator.generate('retrograde.jpg')
+            .then(function(result){
+                buildFromGenerated(result);
+            }); 
+
+        })();
+    
+    </script>
+
+    
+
+</body>
+</html>
